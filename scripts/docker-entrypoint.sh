@@ -1,19 +1,9 @@
 #!/bin/bash
 
-MC_SERVER_VOL=/minecraft
-MC_SERVER_FOLDERNAME="${MC_SERVER_FOLDERNAME:-'server'}"
+MC_SERVER_FOLDERNAME="${MC_SERVER_FOLDERNAME:-server}"
 MC_SERVER_VERSION=''
 URL="https://api.papermc.io/v2/projects/paper"
 RETRIES=3
-
-# Check that we're passed a target parameter
-if [ -z "$MC_SERVER_VOL" ]; then
-
-    echo "Server volume name cannot be empty"
-    exit
-fi
-
-cd "$MC_SERVER_VOL" || exit
 
 # Make sure we have a target directory for everything to go into
 if ! test -d "$MC_SERVER_FOLDERNAME"; then
@@ -22,9 +12,10 @@ if ! test -d "$MC_SERVER_FOLDERNAME"; then
     echo "Made directory ${MC_SERVER_FOLDERNAME}"
 fi
 
-cd "$MC_SERVER_FOLDERNAME" || exit
+# Run the backup script for the server folder
+bash backup.sh "$MC_SERVER_FOLDERNAME"
 
-bash ./backup.sh
+cd "$MC_SERVER_FOLDERNAME" || exit
 
 # If we're not explicitly setting the current version in the script, then query the latest from the paper API
 if [ -z "$MC_SERVER_VERSION" ]; then

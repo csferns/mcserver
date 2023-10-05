@@ -1,7 +1,9 @@
 #!/bin/bash
 
+TARGET=$0
+
 now=$(date +'%Y-%m-%d-%H-%M-%S')
-BACKUPDIRECTORY="/opt/mcserver/backups/${now}";
+BACKUPDIRECTORY="backups/${now}";
 
 # Make sure we have a directory to save to
 mkdir -p "$BACKUPDIRECTORY"
@@ -12,11 +14,11 @@ ALLWORLDS=("world" "world_nether" "world_the_end")
 # Do this in parallel to avoid any potential holdups between different directories
 for w in "${ALLWORLDS[@]}"; do
 (
-    BACKUPNAME="${BACKUPDIRECTORY}/$w.tar.gz"
+    BACKUPNAME="${BACKUPDIRECTORY}/${w}.tar.gz"
 
-    if test -d "$w"; then
+    if test -d "${TARGET}/${w}"; then
 
-        tar -czf "$BACKUPNAME" "$w" || exit
+        tar -czf "$BACKUPNAME" "${TARGET}/${w}" || exit
         echo "Backed up ${w} to ${BACKUPNAME}"
     else 
         echo "${w} didn't exist to back up"
