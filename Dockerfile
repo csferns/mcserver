@@ -1,20 +1,27 @@
-FROM ubuntu:latest
-ENV JAVA_HOME=/opt/java/openjdk
-COPY --from=eclipse-temurin:17 $JAVA_HOME $JAVA_HOME
-ENV PATH="${JAVA_HOME}/bin:${PATH}"
+# syntax=docker/dockerfile:1
 
-RUN apt-get update -y && apt-get upgrade -y
-RUN apt-get install curl jq -y
+FROM eclipse-temurin:17-alpine
 
-RUN useradd -ms /bin/bash mcadmin
-USER mcadmin
+LABEL maintainer="https://github.com/csferns/mcserver"
 
-WORKDIR /opt/mcserver
-COPY mcstart.sh /scripts/mcstart.sh
+ARG USER=mcadmin
+ARG GROUP=minecraft
 
-RUN mkdir server
+RUN apk add --update --no-cache --no-progress tar curl jq
 
-ENTRYPOINT /scripts/mcstart.sh 'server'
+RUN mkdir -p /opt/minecraftserver /minecraft && chmod ugo=rwx /opt/minecraftserver
 
-EXPOSE 25565/tcp
-EXPOSE 25565/udp
+RUN addgroup -S "$GROUP"
+RUN adduser -G "$GROUP" -s /bin/sh -SDH "$USER"
+RUN chown -R "$USER":"$GROUP" /opt/minecraftserver /minecraft
+
+COPY scripts/*.sh /minecraft
+
+USER "$USER"
+
+VOLUME /minecraft
+EXPOSE 25565/tcp 25565/udp
+
+WORKDIR /minecraft
+
+ENTRYPOINT [ "sh", "docker-entrypoint.sh" ]
