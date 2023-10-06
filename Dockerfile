@@ -9,11 +9,11 @@ ARG GROUP=minecraft
 
 RUN apk add --update --no-cache --no-progress tar curl jq
 
-RUN mkdir -p /opt/minecraftserver /minecraft && chmod ugo=rwx /opt/minecraftserver
+RUN mkdir -p /minecraft
 
 RUN addgroup -S "$GROUP"
 RUN adduser -G "$GROUP" -s /bin/sh -SDH "$USER"
-RUN chown -R "$USER":"$GROUP" /opt/minecraftserver /minecraft
+RUN chown -R "$USER":"$GROUP" /minecraft
 
 COPY scripts/*.sh /minecraft
 
