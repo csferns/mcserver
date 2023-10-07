@@ -15,7 +15,9 @@ RUN addgroup -S "$GROUP"
 RUN adduser -G "$GROUP" -s /bin/sh -SDH "$USER"
 RUN chown -R "$USER":"$GROUP" /minecraft
 
-COPY scripts/*.sh /minecraft
+COPY scripts/*.sh /minecraft/
+
+RUN (crontab -l ; echo "0 0 * * * /minecraft/backup.sh") | crontab -
 
 USER "$USER"
 
